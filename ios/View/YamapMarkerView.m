@@ -16,6 +16,8 @@
 
 #define YAMAP_FRAMES_PER_SECOND 25
 
+static NSMutableDictionary<NSString *, UIImage *> *fooDict = nil;
+
 @implementation YamapMarkerView {
     YMKPoint* _point;
     YMKPlacemarkMapObject* mapObject;
@@ -28,6 +30,13 @@
     NSNumber* visible;
     NSMutableArray<UIView*>* _reactSubviews;
     UIView* _childView;
+}
+
+- (NSMutableDictionary<NSString *, UIImage *> *) cache {
+  if (fooDict == nil) {
+    fooDict = [[NSMutableDictionary<NSString *, UIImage *> alloc] init];
+  }
+  return fooDict;
 }
 
 - (instancetype)init {
@@ -57,7 +66,15 @@
 		if ([_reactSubviews count] == 0) {
 			if (![source isEqual:@""]) {
 				if (![source isEqual:lastSource]) {
-					[mapObject setIconWithImage:[self resolveUIImage:source]];
+                    UIImage* temp = [self cache][source];
+                    if (temp != nil) {
+                        [mapObject setIconWithImage:temp];
+                    } else {
+                        UIImage* image = [self resolveUIImage:source];
+                        [self cache][source] = image;
+                        [mapObject setIconWithImage:image];
+                    }
+					
 					lastSource = source;
 				}
 			}
