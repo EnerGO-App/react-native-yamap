@@ -20,6 +20,8 @@
 -(YMKPlacemarkMapObject*) getMapObject;
 -(void) setMapObject:(YMKPlacemarkMapObject*) mapObject;
 
+-(NSMutableDictionary<NSString *, UIImage *> *) cache;
+
 @end
 
 #endif /* YamapMarkerView_h */

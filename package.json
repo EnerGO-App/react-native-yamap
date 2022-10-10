@@ -1,5 +1,5 @@
 {
-  "name": "react-native-yamap",
+  "name": "energo-yandex-maps",
   "version": "4.0.2",
   "description": "Yandex.MapKit and Yandex.Geocoder for react-native",
   "main": "build/index.js",

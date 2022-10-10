@@ -26,6 +26,8 @@ import ru.vvdev.yamap.models.ReactMapObject;
 import ru.vvdev.yamap.utils.Callback;
 import ru.vvdev.yamap.utils.ImageLoader;
 
+import ru.vvdev.yamap.EnergoImageCache;
+
 public class YamapMarker extends ReactViewGroup implements MapObjectTapListener, ReactMapObject {
     public Point point;
     private int zIndex = 1;
@@ -101,19 +103,31 @@ public class YamapMarker extends ReactViewGroup implements MapObjectTapListener,
             }
             if (childs.size() == 0) {
                 if (!iconSource.equals("")) {
-                    ImageLoader.DownloadImageBitmap(getContext(), iconSource, new Callback<Bitmap>() {
-                        @Override
-                        public void invoke(Bitmap bitmap) {
-                            try {
-                                if (mapObject != null) {
-                                    mapObject.setIcon(ImageProvider.fromBitmap(bitmap));
-                                    mapObject.setIconStyle(iconStyle);
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                    ImageProvider cachedImage = EnergoImageCache.get(iconSource);
+                    if (cachedImage != null) {
+                        try {
+                            if (mapObject != null) {
+                                mapObject.setIcon(cachedImage);
+                                mapObject.setIconStyle(iconStyle);
                             }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                    });
+                    } else {
+                        ImageLoader.DownloadImageBitmap(getContext(), iconSource, new Callback<Bitmap>() {
+                            @Override
+                            public void invoke(Bitmap bitmap) {
+                                try {
+                                    if (mapObject != null) {
+                                        mapObject.setIcon(ImageProvider.fromBitmap(bitmap));
+                                        mapObject.setIconStyle(iconStyle);
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
                 }
             }
         }

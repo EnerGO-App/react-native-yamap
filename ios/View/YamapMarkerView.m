@@ -14,6 +14,8 @@
 
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
+static NSMutableDictionary<NSString *, UIImage *> *fooDict = nil;
+
 @implementation YamapMarkerView {
     YMKPoint* _point;
     YMKPlacemarkMapObject* mapObject;
@@ -24,6 +26,13 @@
     NSValue* anchor;
     NSMutableArray<UIView*>* _reactSubviews;
     UIView* _childView;
+}
+
+- (NSMutableDictionary<NSString *, UIImage *> *) cache {
+  if (fooDict == nil) {
+    fooDict = [[NSMutableDictionary<NSString *, UIImage *> alloc] init];
+  }
+  return fooDict;
 }
 
 - (instancetype)init {
@@ -48,7 +57,15 @@
 		if ([_reactSubviews count] == 0) {
 			if (![source isEqual:@""]) {
 				if (![source isEqual:lastSource]) {
-					[mapObject setIconWithImage:[self resolveUIImage:source]];
+                    UIImage* temp = [self cache][source];
+                    if (temp != nil) {
+                        [mapObject setIconWithImage:temp];
+                    } else {
+                        UIImage* image = [self resolveUIImage:source];
+                        [self cache][source] = image;
+                        [mapObject setIconWithImage:image];
+                    }
+					
 					lastSource = source;
 				}
 			}
