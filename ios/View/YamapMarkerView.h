@@ -26,6 +26,8 @@
 - (void)setMapObject:(YMKPlacemarkMapObject*)mapObject;
 - (void)setClusterMapObject:(YMKPlacemarkMapObject*)mapObject;
 
+-(NSMutableDictionary<NSString *, UIImage *> *) cache;
+
 @end
 
 #endif /* YamapMarkerView_h */
