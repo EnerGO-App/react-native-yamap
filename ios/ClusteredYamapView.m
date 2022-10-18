@@ -16,7 +16,7 @@ RCT_EXPORT_MODULE()
 
 - (NSArray<NSString *> *)supportedEvents {
     return @[
-        @"onRouteFound",
+        //@"onRouteFound",
         @"onCameraPositionReceived",
         @"onVisibleRegionReceived",
         @"onCameraPositionChange",
@@ -45,7 +45,7 @@ RCT_EXPORT_MODULE()
 }
 
 // props
-RCT_EXPORT_VIEW_PROPERTY(onRouteFound, RCTBubblingEventBlock)
+//RCT_EXPORT_VIEW_PROPERTY(onRouteFound, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onCameraPositionReceived, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onVisibleRegionReceived, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onCameraPositionChange, RCTBubblingEventBlock)
@@ -155,23 +155,23 @@ RCT_EXPORT_METHOD(fitAllMarkers:(nonnull NSNumber*) reactTag) {
     }];
 }
 
-RCT_EXPORT_METHOD(findRoutes:(nonnull NSNumber*) reactTag json:(NSDictionary*) json) {
-    [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
-        RNCYMView *view = (RNCYMView*) viewRegistry[reactTag];
-        if (!view || ![view isKindOfClass:[RNCYMView class]]) {
-            RCTLogError(@"Cannot find NativeView with tag #%@", reactTag);
-            return;
-        }
-        NSArray<YMKPoint*>* points = [RCTConvert Points:json[@"points"]];
-        NSMutableArray<YMKRequestPoint*>* requestPoints = [[NSMutableArray alloc] init];
-        for (int i = 0; i < [points count]; ++i) {
-            YMKRequestPoint * requestPoint = [YMKRequestPoint requestPointWithPoint:[points objectAtIndex:i] type: YMKRequestPointTypeWaypoint pointContext:nil];
-            [requestPoints addObject:requestPoint];
-        }
-        NSArray<NSString*>* vehicles = [RCTConvert Vehicles:json[@"vehicles"]];
-        [view findRoutes: requestPoints vehicles: vehicles withId:json[@"id"]];
-    }];
-}
+// RCT_EXPORT_METHOD(findRoutes:(nonnull NSNumber*) reactTag json:(NSDictionary*) json) {
+//     [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
+//         RNCYMView *view = (RNCYMView*) viewRegistry[reactTag];
+//         if (!view || ![view isKindOfClass:[RNCYMView class]]) {
+//             RCTLogError(@"Cannot find NativeView with tag #%@", reactTag);
+//             return;
+//         }
+//         NSArray<YMKPoint*>* points = [RCTConvert Points:json[@"points"]];
+//         NSMutableArray<YMKRequestPoint*>* requestPoints = [[NSMutableArray alloc] init];
+//         for (int i = 0; i < [points count]; ++i) {
+//             YMKRequestPoint * requestPoint = [YMKRequestPoint requestPointWithPoint:[points objectAtIndex:i] type: YMKRequestPointTypeWaypoint pointContext:nil];
+//             [requestPoints addObject:requestPoint];
+//         }
+//         NSArray<NSString*>* vehicles = [RCTConvert Vehicles:json[@"vehicles"]];
+//         [view findRoutes: requestPoints vehicles: vehicles withId:json[@"id"]];
+//     }];
+// }
 
 RCT_EXPORT_METHOD(setCenter:(nonnull NSNumber*) reactTag center:(NSDictionary*_Nonnull) center zoom:(NSNumber*_Nonnull) zoom azimuth:(NSNumber*_Nonnull) azimuth tilt:(NSNumber*_Nonnull) tilt duration: (NSNumber*_Nonnull) duration animation:(NSNumber*_Nonnull) animation) {
     [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {

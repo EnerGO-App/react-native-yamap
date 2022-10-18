@@ -28,14 +28,14 @@ public class YamapViewManager extends ViewGroupManager<YamapView> {
 
     private static final int SET_CENTER = 1;
     private static final int FIT_ALL_MARKERS = 2;
-    private static final int FIND_ROUTES = 3;
-    private static final int SET_ZOOM = 4;
-    private static final int GET_CAMERA_POSITION = 5;
-    private static final int GET_VISIBLE_REGION = 6;
-    private static final int SET_TRAFFIC_VISIBLE = 7;
-    private static final int FIT_MARKERS = 8;
-    private static final int GET_SCREEN_POINTS = 9;
-    private static final int GET_WORLD_POINTS = 10;
+    //private static final int FIND_ROUTES = 3;
+    private static final int SET_ZOOM = 3;
+    private static final int GET_CAMERA_POSITION = 4;
+    private static final int GET_VISIBLE_REGION = 5;
+    private static final int SET_TRAFFIC_VISIBLE = 6;
+    private static final int FIT_MARKERS = 7;
+    private static final int GET_SCREEN_POINTS = 8;
+    private static final int GET_WORLD_POINTS = 9;
 
     YamapViewManager() {
     }
@@ -53,7 +53,7 @@ public class YamapViewManager extends ViewGroupManager<YamapView> {
 
     public Map getExportedCustomBubblingEventTypeConstants() {
         return MapBuilder.builder()
-            .put("routes", MapBuilder.of("phasedRegistrationNames", MapBuilder.of("bubbled", "onRouteFound")))
+            //.put("routes", MapBuilder.of("phasedRegistrationNames", MapBuilder.of("bubbled", "onRouteFound")))
             .put("cameraPosition", MapBuilder.of("phasedRegistrationNames", MapBuilder.of("bubbled", "onCameraPositionReceived")))
             .put("cameraPositionChange", MapBuilder.of("phasedRegistrationNames", MapBuilder.of("bubbled", "onCameraPositionChange")))
             .put("cameraPositionChangeEnd", MapBuilder.of("phasedRegistrationNames", MapBuilder.of("bubbled", "onCameraPositionChangeEnd")))
@@ -71,7 +71,7 @@ public class YamapViewManager extends ViewGroupManager<YamapView> {
         Map<String, Integer> map = MapBuilder.newHashMap();
         map.put("setCenter", SET_CENTER);
         map.put("fitAllMarkers", FIT_ALL_MARKERS);
-        map.put("findRoutes", FIND_ROUTES);
+        //map.put("findRoutes", FIND_ROUTES);
         map.put("setZoom", SET_ZOOM);
         map.put("getCameraPosition", GET_CAMERA_POSITION);
         map.put("getVisibleRegion", GET_VISIBLE_REGION);
@@ -106,11 +106,11 @@ public class YamapViewManager extends ViewGroupManager<YamapView> {
                     }
                     break;
 
-                case "findRoutes":
-                    if (args != null) {
-                        findRoutes(view, args.getArray(0), args.getArray(1), args.getString(2));
-                    }
-                    break;
+                // case "findRoutes":
+                //     if (args != null) {
+                //         findRoutes(view, args.getArray(0), args.getArray(1), args.getString(2));
+                //     }
+                //     break;
 
                 case "setZoom":
                     if (args != null) {
@@ -196,28 +196,28 @@ public class YamapViewManager extends ViewGroupManager<YamapView> {
         }
     }
 
-    private void findRoutes(View view, ReadableArray jsPoints, ReadableArray jsVehicles, String id) {
-        if (jsPoints != null) {
-            ArrayList<Point> points = new ArrayList<>();
+    // private void findRoutes(View view, ReadableArray jsPoints, ReadableArray jsVehicles, String id) {
+    //     if (jsPoints != null) {
+    //         ArrayList<Point> points = new ArrayList<>();
 
-            for (int i = 0; i < jsPoints.size(); ++i) {
-                ReadableMap point = jsPoints.getMap(i);
-                if (point != null) {
-                    points.add(new Point(point.getDouble("lat"), point.getDouble("lon")));
-                }
-            }
+    //         for (int i = 0; i < jsPoints.size(); ++i) {
+    //             ReadableMap point = jsPoints.getMap(i);
+    //             if (point != null) {
+    //                 points.add(new Point(point.getDouble("lat"), point.getDouble("lon")));
+    //             }
+    //         }
 
-            ArrayList<String> vehicles = new ArrayList<>();
+    //         ArrayList<String> vehicles = new ArrayList<>();
 
-            if (jsVehicles != null) {
-                for (int i = 0; i < jsVehicles.size(); ++i) {
-                    vehicles.add(jsVehicles.getString(i));
-                }
-            }
+    //         if (jsVehicles != null) {
+    //             for (int i = 0; i < jsVehicles.size(); ++i) {
+    //                 vehicles.add(jsVehicles.getString(i));
+    //             }
+    //         }
 
-            castToYaMapView(view).findRoutes(points, vehicles, id);
-        }
-    }
+    //         castToYaMapView(view).findRoutes(points, vehicles, id);
+    //     }
+    // }
 
     // PROPS
     @ReactProp(name = "userLocationIcon")
