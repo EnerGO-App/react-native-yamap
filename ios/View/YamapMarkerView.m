@@ -63,26 +63,27 @@ static NSMutableDictionary<NSString *, UIImage *> *fooDict = nil;
           [iconStyle setAnchor:anchor];
         }
         [iconStyle setRotationType:rotated];
-		if ([_reactSubviews count] == 0) {
-			if (![source isEqual:@""]) {
-				if (![source isEqual:lastSource]) {
+        if ([_reactSubviews count] == 0) {
+            if (![source isEqual:@""]) {
+                if (![source isEqual:lastSource]) {
                     UIImage* temp = [self cache][source];
                     if (temp != nil) {
                         [mapObject setIconWithImage:temp];
                     } else {
                         UIImage* image = [self resolveUIImage:source];
                         [self cache][source] = image;
-                        [mapObject setIconWithImage:image];
+                        if (image != nil) {
+                            [mapObject setIconWithImage:image];
+                        }
                     }
-					
-					lastSource = source;
-				}
-			}
-		}
+                    
+                    lastSource = source;
+                }
+            }
+        }
         [mapObject setIconStyleWithStyle:iconStyle];
-	}
+    }
 }
-
 
 - (void)updateClusterMarker {
     if (mapObject != nil && mapObject.valid) {
