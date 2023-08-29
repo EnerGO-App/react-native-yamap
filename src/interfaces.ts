@@ -3,6 +3,11 @@ export interface Point {
   lon: number;
 }
 
+export interface BoundingBox {
+  southWest: Point;
+  northEast: Point;
+}
+
 export interface ScreenPoint {
   x: number;
   y: number;
@@ -88,7 +93,12 @@ export enum Animation {
   LINEAR,
 }
 
-export type YandexLogo = {
+export type YandexLogoPosition = {
   horizontal?: "left" | "center" | "right";
   vertical?: "top" | "bottom";
+};
+
+export type YandexLogoPadding = {
+  horizontal?: number;
+  vertical?: number;
 };

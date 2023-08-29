@@ -218,9 +218,14 @@ type YamapSuggestWithCoords = {
   uri?: string;
 }
 
-type YandexLogo = {
+type YandexLogoPosition = {
   horizontal: 'left' | 'center' | 'right';
   vertical: 'top' | 'bottom';
+}
+
+type YandexLogoPadding = {
+  horizontal?: number;
+  vertical?: number;
 }
 ```
 
@@ -250,7 +255,8 @@ type YandexLogo = {
 | fastTapEnabled | boolean | true | Убрана ли задержка в 300мс при клике/тапе |
 | clusterColor | string | 'red' | Цвет фона метки-кластера |
 | maxFps | number | 60 | Максимальная частота обновления карты |
-| logoPosition | YandexLogo | {} | Позиция логотипа Яндекса на карте |
+| logoPosition | YandexLogoPosition | {} | Позиция логотипа Яндекса на карте |
+| logoPadding | YandexLogoPadding | {} | Отступ логотипа Яндекса на карте |
 | mapType | string | 'vector' | Тип карты |
 | mapStyle | string | {} | Стили карты согласно [документации](https://yandex.ru/dev/maps/mapkit/doc/dg/concepts/style.html) |
 
@@ -544,4 +550,61 @@ const Map = () => {
     />
   );
 };
+```
+
+# Использование с Expo
+Для подключения нативного модуля в приложение с expo используйте expo prebuild.
+Он выполнит eject и сгенерирует привычные папки android и ios с нативным кодом. Это позволит использовать любую библиотеку так же, как и приложение с react native cli.
+
+Для корректной работы на iOS react-native-yamap требует обновить AppDelegate.mm и инициализировать YMKMapKit при запуске приложения. prebuild не гарантирует сохранности папок android и ios, их нет смысла включать в Git. Чтобы напрямую менять нативный код есть config plugins.
+
+Обновите app.json на app.config.ts и используйте этот пример модификации AppDelegate:
+```jsx
+import { type ExpoConfig } from "@expo/config-types";
+import { withAppDelegate, type ConfigPlugin } from "expo/config-plugins";
+
+const config: ExpoConfig = {
+  name: "Example",
+  slug: "example-app",
+  version: "1.0.0",
+  extra: {
+    mapKitApiKey: "bla-bla-bla",
+  },
+};
+
+const withYandexMaps: ConfigPlugin = (config) => {
+  return withAppDelegate(config, async (config) => {
+    const appDelegate = config.modResults;
+
+    // Add import
+    if (!appDelegate.contents.includes("#import <YandexMapsMobile/YMKMapKitFactory.h>")) {
+      // Replace the first line with the intercom import
+      appDelegate.contents = appDelegate.contents.replace(
+        /#import "AppDelegate.h"/g,
+        `#import "AppDelegate.h"\n#import <YandexMapsMobile/YMKMapKitFactory.h>`
+      );
+    }
+
+    const mapKitMethodInvocations = [
+      `[YMKMapKit setApiKey:@"${config.extra?.mapKitApiKey}"];`,
+      `[YMKMapKit setLocale:@"ru_RU"];`,
+      `[YMKMapKit mapKit];`,
+    ]
+      .map((line) => `\t${line}`)
+      .join("\n");
+
+    // Add invocation
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    if (!appDelegate.contents.includes(mapKitMethodInvocations)) {
+      appDelegate.contents = appDelegate.contents.replace(
+        /\s+return YES;/g,
+        `\n\n${mapKitMethodInvocations}\n\n\treturn YES;`
+      );
+    }
+
+    return config;
+  });
+};
+
+export default withYandexMaps(config);
 ```

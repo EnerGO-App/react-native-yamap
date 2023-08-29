@@ -1,6 +1,10 @@
 #import <React/RCTComponent.h>
 #import <React/UIView+React.h>
 
+#if TARGET_OS_SIMULATOR
+#import <mach-o/arch.h>
+#endif
+
 #import <MapKit/MapKit.h>
 #import "../Converter/RCTConvert+Yamap.m"
 @import YandexMapsMobile;
@@ -45,7 +49,14 @@
 }
 
 - (instancetype)init {
-    self = [super init];
+#if TARGET_OS_SIMULATOR
+    NXArchInfo *archInfo = NXGetLocalArchInfo();
+    NSString *cpuArch = [NSString stringWithUTF8String:archInfo->description];
+    self = [super initWithFrame:CGRectZero vulkanPreferred:[cpuArch hasPrefix:@"ARM64"]];
+#else
+    self = [super initWithFrame:CGRectZero];
+#endif
+
     _reactSubviews = [[NSMutableArray alloc] init];
     //masstransitRouter = [[YMKTransport sharedInstance] createMasstransitRouter];
     //drivingRouter = [[YMKDirections sharedInstance] createDrivingRouter];
@@ -594,6 +605,14 @@
     }
 
     [self.mapWindow.map.logo setAlignmentWithAlignment:[YMKLogoAlignment alignmentWithHorizontalAlignment:horizontalAlignment verticalAlignment:verticalAlignment]];
+}
+
+- (void)setLogoPadding:(NSDictionary *)logoPadding {
+    NSUInteger *horizontalPadding = [logoPadding valueForKey:@"horizontal"] != nil ? [RCTConvert NSUInteger:logoPadding[@"horizontal"]] : 0;
+    NSUInteger *verticalPadding = [logoPadding valueForKey:@"vertical"] != nil ? [RCTConvert NSUInteger:logoPadding[@"vertical"]] : 0;
+
+    YMKLogoPadding *padding = [YMKLogoPadding paddingWithHorizontalPadding:horizontalPadding verticalPadding:verticalPadding];
+    [self.mapWindow.map.logo setPaddingWithPadding:padding];
 }
 
 // PROPS
